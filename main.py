@@ -100,6 +100,14 @@ async def secure_endpoint(session_data: SessionData = Depends(get_current_sessio
     return JSONResponse(content={"message": "Secure content"})
 
 
+@app.get("/logout")
+async def logout(session_token: str = Cookie(None)):
+    if get_session(session_token) is not None:
+        del session_db[session_token]
+    response = Response(content=json.dumps({"message": "Logout successful"}))
+    response.delete_cookie(SESSION_COOKIE_NAME)
+    return response
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="127.0.0.1", port=8000)
